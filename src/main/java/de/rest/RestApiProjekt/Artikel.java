@@ -2,6 +2,7 @@ package de.rest.RestApiProjekt;
 
 public class Artikel {
     private int id;
+    //mkn
     private String name;
     private double preis;
 
