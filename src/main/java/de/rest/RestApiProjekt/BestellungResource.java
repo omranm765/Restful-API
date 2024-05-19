@@ -23,7 +23,7 @@ public class BestellungResource {
     @Path("/artikel")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Artikel addArtikel(Artikel artikel) {
+    public Artikel addArtikel(Artikel artikel) throws ShopException {
         bestellung.addArtikel(artikel);
         return artikel;
     }
@@ -41,7 +41,7 @@ public class BestellungResource {
     @Path("/kunden")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Kunde addKunde(Kunde kunde) {
+    public Kunde addKunde(Kunde kunde) throws ShopException {
         bestellung.addKunde(kunde);
         return kunde;
     }
@@ -51,7 +51,7 @@ public class BestellungResource {
     @Path("/kunden/{kundeId}/artikel")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Artikel> addArtikelToKunde(@PathParam("kundeId") int kundeId, List<Artikel> artikelList) {
+    public List<Artikel> addArtikelToKunde(@PathParam("kundeId") int kundeId, List<Artikel> artikelList) throws ShopException {
         Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
         if (kunde != null) {
             bestellung.addListOfArtikelToKunde(kunde, artikelList);
@@ -66,7 +66,7 @@ public class BestellungResource {
     public List<Artikel> getArtikelForKunde(@PathParam("kundeId") int kundeId) {
         Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
         if (kunde != null) {
-            return bestellung.getArtikelByKey(kunde);
+            return bestellung.getArtikelnByKey(kunde);
         }
         return new ArrayList<>();
     }
