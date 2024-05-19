@@ -2,7 +2,7 @@ package de.rest.RestApiProjekt;
 
 public class Artikel {
     private int id;
-    //mkn
+
     private String name;
     private double preis;
 
@@ -29,7 +29,6 @@ public class Artikel {
     }
 
     public String toString(){
-        return "Artikel\n" +
-                "Name: " + name + "\nPreis: " + preis;
+        return "Name: " + name + "\nPreis: " + preis;
     }
 }

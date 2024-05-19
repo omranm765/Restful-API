@@ -1,10 +1,6 @@
 package de.rest.RestApiProjekt;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Bestellung {
     private List<Artikel> artikelList;
@@ -17,62 +13,56 @@ public class Bestellung {
         kundeListMap = new HashMap<>();
     }
 
-    public void addListOfArtikelToKunde(Kunde kunde, List<Artikel> artikelList){
-        //Logischen-Denk Fehler
-        //Überall überprüfen
-        List<Artikel> list = kundeListMap.getOrDefault(kunde, new ArrayList<>());
-        kundeListMap.put(kunde, list);
+    public void addListOfArtikelToKunde(Kunde kunde, List<Artikel> artikelList) throws ShopException {
+        Validator.check(kunde == null, "Kunde nicht gefunden!" );
+        kunde.addAllArtikel(artikelList);
+        kundeListMap.put(kunde, kunde.getArtikelList());
     }
 
-    public List<Artikel> getArtikelByKey(Kunde kunde){
+    public void addArtikelToKunde(Kunde kunde, Artikel artikel) throws ShopException {
+        Validator.check(kunde == null, "Kunde nicht gefunden!" );
+        Validator.check(artikel == null, "Artikel nicht gefunden!" );
+        kunde.addArtikel(artikel);
+        kundeListMap.put(kunde, kunde.getArtikelList());
+    }
+
+    public List<Artikel> getArtikelnByKey(Kunde kunde){
         return kundeListMap.get(kunde);
     }
 
     public Kunde getKundeByValue(List<Artikel> artikelList){
         for (Map.Entry<Kunde, List<Artikel>> entry : kundeListMap.entrySet()) {
-            if(entry.getValue().containsAll(artikelList)){
+            if(new HashSet<>(entry.getValue()).containsAll(artikelList)){
                 return entry.getKey();
             }
         }
         return null;
     }
 
-    public void removeArtikelFromListInMap(Kunde kunde, Artikel artikel){
-        artikelList = getArtikelByKey(kunde);
-        artikelLoeschen(artikel);
+    public void removeArtikelFromListInMap(Kunde kunde, Artikel artikel) throws ShopException {
+        /*artikelList = getArtikelnByKey(kunde);
+        artikelLoeschen(artikel);*/
+        kunde.removeArtikel(artikel);
     }
 
-    public void addArtikel(Artikel artikel){
-        if (artikel == null){
-
-        }
+    public void addArtikel(Artikel artikel) throws ShopException {
+        Validator.check(artikel == null, "Artikel nicht gefunden!" );
         artikelList.add(artikel);
     }
 
-    public void artikelLoeschen(Artikel artikel){
-        if (artikel == null){
+    public void artikelLoeschen(Artikel artikel) throws ShopException {
+        Validator.check(artikel == null, "Artikel nicht gefunden!" );
 
-        }
-
-        for (Artikel a: artikelList){
-            if (a.getId() == artikel.getId()){
-                artikelList.remove(a);
-            }
-        }
+        artikelList.removeIf(a -> a.getId() == artikel.getId());
     }
 
-    public void addKunde(Kunde kunde){
-        if (kunde == null){
-
-        }
+    public void addKunde(Kunde kunde) throws ShopException {
+        Validator.check(kunde == null, "Kunde nicht gefunden!" );
         kundeList.add(kunde);
     }
 
-    public void kundeLoeschen(Kunde kunde){
-        if (kunde == null){
-
-        }
-
+    public void kundeLoeschen(Kunde kunde) throws ShopException {
+        Validator.check(kunde == null, "Kunde nicht gefunden!" );
         for (Kunde k: kundeList){
             if (k.getId() == kunde.getId()){
                 kundeList.remove(k);
@@ -109,15 +99,6 @@ public class Bestellung {
         StringBuilder builder = new StringBuilder();
         builder.append("Bestellung:\n");
 
-        // Artikel
-        for (Artikel artikel : artikelList) {
-            builder.append(artikel.toString()).append("\n");
-        }
-
-        // Kunden
-        for (Kunde kunde : kundeList) {
-            builder.append(kunde.toString()).append("\n");
-        }
 
         // Kunde-Liste Map
         builder.append("Kunde-Liste Map:\n");
@@ -133,11 +114,14 @@ public class Bestellung {
         return builder.toString();
     }
 
-    public static void main(String[] args) {
-        Kunde kunde = new Kunde(1, "Moh san", "0122142134");
+    public static void main(String[] args) throws ShopException {
         Artikel artikel1 = new Artikel(1, "Moh Artikel1", 10);
         Artikel artikel2 = new Artikel(2, "Moh Artikel2", 20);
+        List<Artikel> artikelList = new ArrayList<>();
+        Kunde kunde = new Kunde(1, "Moh san", "0122142134", artikelList);
         Bestellung bestellung = new Bestellung();
+        kunde.addArtikel(artikel1);
+        kunde.addArtikel(artikel2);
         bestellung.addArtikel(artikel1);
         bestellung.addArtikel(artikel2);
         bestellung.addKunde(kunde);
@@ -145,6 +129,6 @@ public class Bestellung {
         System.out.println(bestellung);
         bestellung.removeArtikelFromListInMap(kunde, artikel1);
         System.out.println(bestellung);
-        System.out.println("KundebyValue:\n" + bestellung.getKundeByValue(bestellung.getArtikelList()));
+        System.out.println("KundebyValue:\n" + bestellung.getKundeByValue(artikelList));
     }
 }
