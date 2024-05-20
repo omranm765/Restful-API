@@ -22,7 +22,7 @@ public class Kunde {
 
     public void addAllArtikel(List<Artikel> artikelList) throws ShopException {
         Validator.check(artikelList == null, "Artikeln nicht gefunden!");
-        artikelList.addAll(artikelList);
+        this.artikelList.addAll(artikelList);
     }
 
     public void removeArtikel(Artikel artikel) throws ShopException {
