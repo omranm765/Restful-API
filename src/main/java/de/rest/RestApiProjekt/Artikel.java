@@ -11,6 +11,9 @@ public class Artikel {
         this.name = name;
         this.preis = preis;
     }
+    public Artikel (){
+
+    }
 
     public void setPreis(double preis) {
         this.preis = preis;
