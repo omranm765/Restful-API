@@ -5,20 +5,17 @@ import java.util.List;
 public class Kunde {
     private int id;
     private String name;
-    private String teleforNr;
+    private String telefonNr;
     private List<Artikel> artikelList;
 
-    public Kunde(int id, String name, String teleforNr, List<Artikel> artikelList) {
+    public Kunde(int id, String name, String telefonNr, List<Artikel> artikelList) {
         this.id = id;
         this.name = name;
-        this.teleforNr = teleforNr;
+        this.telefonNr = telefonNr;
         this.artikelList = artikelList;
     }
 
-
-    public Kunde(){
-
-    }
+    public Kunde() {}
 
     public void addArtikel(Artikel artikel) throws ShopException {
         Validator.check(artikel == null, "Artikel nicht gefunden!");
@@ -39,8 +36,8 @@ public class Kunde {
         this.name = name;
     }
 
-    public void setTeleforNr(String teleforNr) {
-        this.teleforNr = teleforNr;
+    public void setTelefonNr(String telefonNr) {
+        this.telefonNr = telefonNr;
     }
 
     public void setArtikelList(List<Artikel> artikelList) {
@@ -55,17 +52,17 @@ public class Kunde {
         return name;
     }
 
-    public String getTeleforNr() {
-        return teleforNr;
+    public String getTelefonNr() {
+        return telefonNr;
     }
 
     public List<Artikel> getArtikelList() {
         return artikelList;
     }
 
-    public String toString(){
+    public String toString() {
         return "Kunde\n" +
-                "Name: " + name + "\nTelefonNr: " + teleforNr +
+                "Name: " + name + "\nTelefonNr: " + telefonNr +
                 "\nArtikeln: " + artikelList;
     }
 }

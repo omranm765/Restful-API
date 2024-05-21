@@ -63,7 +63,7 @@ public class KundenResource {
         for (Kunde kunde : kundenListe) {
             if (kunde.getId() == id) {
                 kunde.setName(updatedKunde.getName());
-                kunde.setTeleforNr(updatedKunde.getTeleforNr());
+                kunde.setTelefonNr(updatedKunde.getTelefonNr());
                 kunde.setArtikelList(updatedKunde.getArtikelList());
                 return kunde;
             }
