@@ -15,6 +15,11 @@ public class Kunde {
         this.artikelList = artikelList;
     }
 
+
+    public Kunde(){
+
+    }
+
     public void addArtikel(Artikel artikel) throws ShopException {
         Validator.check(artikel == null, "Artikel nicht gefunden!");
         artikelList.add(artikel);

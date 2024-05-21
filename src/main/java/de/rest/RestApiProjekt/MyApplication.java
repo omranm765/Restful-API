@@ -7,6 +7,7 @@ import org.glassfish.jersey.server.ResourceConfig;
         public MyApplication() {
             register(JacksonFeature.class);  // Unterstützung für JSON
             register(BestellungResource.class);  // Registrierung der BestellungResource
+            register(KundenResource.class);  //    Registrierung der KundenResources
         }
     }
 
