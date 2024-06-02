@@ -2,6 +2,8 @@ package de.rest.RestApiProjekt;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -23,9 +25,13 @@ public class BestellungResource {
     @Path("/artikel")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Artikel addArtikel(Artikel artikel) throws ShopException {
-        bestellung.addArtikel(artikel);
-        return artikel;
+    public Response addArtikel(Artikel artikel) {
+        try {
+            bestellung.addArtikel(artikel);
+            return Response.status(Response.Status.CREATED).entity(artikel).build();
+        } catch (ShopException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
     // GET: Alle Kunden abrufen
@@ -41,9 +47,13 @@ public class BestellungResource {
     @Path("/kunden")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Kunde addKunde(Kunde kunde) throws ShopException {
-        bestellung.addKunde(kunde);
-        return kunde;
+    public Response addKunde(Kunde kunde) {
+        try {
+            bestellung.addKunde(kunde);
+            return Response.status(Response.Status.CREATED).entity(kunde).build();
+        } catch (ShopException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 
     // POST: Artikel zu einem Kunden hinzufügen
@@ -51,23 +61,30 @@ public class BestellungResource {
     @Path("/kunden/{kundeId}/artikel")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Artikel> addArtikelToKunde(@PathParam("kundeId") int kundeId, List<Artikel> artikelList) throws ShopException {
-        Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
-        if (kunde != null) {
-            bestellung.addListOfArtikelToKunde(kunde, artikelList);
+    public Response addArtikelToKunde(@PathParam("kundeId") int kundeId, List<Artikel> artikelList) {
+        try {
+            Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
+            if (kunde != null) {
+                bestellung.addListOfArtikelToKunde(kunde, artikelList);
+                return Response.ok(artikelList).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
+            }
+        } catch (ShopException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-        return artikelList;
     }
 
     // GET: Artikel für einen bestimmten Kunden abrufen
     @GET
     @Path("/kunden/{kundeId}/artikel")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Artikel> getArtikelForKunde(@PathParam("kundeId") int kundeId) {
+    public Response getArtikelForKunde(@PathParam("kundeId") int kundeId) {
         Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
         if (kunde != null) {
-            return bestellung.getArtikelnByKey(kunde);
+            return Response.ok(bestellung.getArtikelnByKey(kunde)).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
         }
-        return new ArrayList<>();
     }
 }

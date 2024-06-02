@@ -1,5 +1,7 @@
 package de.rest.RestApiProjekt;
 
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -10,12 +12,16 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            final ResourceConfig resourceConfig = new MyApplication();  // Konfiguration der Anwendung
-            GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), resourceConfig);  // Start des Servers
-            System.out.println("Server started. Press Ctrl+C to exit...");  // Ausgabe einer Nachricht
-            Thread.currentThread().join();  // Server läuft weiter bis zum Abbruch
+            final ResourceConfig resourceConfig = new MyApplication();
+            HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), resourceConfig);
+
+            StaticHttpHandler staticHttpHandler = new StaticHttpHandler("src/main/resources");
+            server.getServerConfiguration().addHttpHandler(staticHttpHandler, "/static");
+
+            System.out.println("Server started. Press Ctrl+C to exit...");
+            Thread.currentThread().join();
         } catch (Exception e) {
-            e.printStackTrace();  // Ausgabe von Fehlern
+            e.printStackTrace();
         }
     }
 }
