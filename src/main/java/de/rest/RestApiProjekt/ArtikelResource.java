@@ -24,7 +24,6 @@ public class ArtikelResource {
      * @return Response Objekt
      */
     @GET
-    @Path("/listeVonAllen")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Artikel> getArtikel() {
         return artikelListe;

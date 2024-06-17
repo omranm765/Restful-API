@@ -28,7 +28,6 @@ public class KundenResource {
 
     // GET: Alle Kunden abrufen
     @GET
-    @Path("/listeVonAllen")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getKunden() {
         return Response.ok(kundenListe).build();

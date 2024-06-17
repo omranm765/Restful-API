@@ -87,4 +87,50 @@ public class BestellungResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
         }
     }
+    // DELETE: Einen Artikel löschen
+    @DELETE
+    @Path("/artikel/{artikelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteArtikel(@PathParam("artikelId") int artikelId) {
+        try {
+            Artikel artikel = bestellung.getArtikelList().stream().filter(a -> a.getId() == artikelId).findFirst().orElse(null);
+            bestellung.artikelLoeschen(artikel);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (ShopException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+    // DELETE: Einen Kunden löschen
+    @DELETE
+    @Path("/kunden/{kundeId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteKunde(@PathParam("kundeId") int kundeId) {
+        try {
+            Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
+            bestellung.kundeLoeschen(kunde);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (ShopException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+    // DELETE: Alle Artikel eines Kunden löschen
+    @DELETE
+    @Path("/kunden/{kundeId}/artikel")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteArtikelForKunde(@PathParam("kundeId") int kundeId) {
+        try {
+            Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
+            if (kunde != null) {
+                List<Artikel> artikelList = bestellung.getArtikelnByKey(kunde);
+                for (Artikel artikel : artikelList) {
+                    bestellung.removeArtikelFromListInMap(kunde, artikel);
+                }
+                return Response.status(Response.Status.NO_CONTENT).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
+            }
+        } catch (ShopException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
 }
