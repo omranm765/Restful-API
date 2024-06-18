@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.Response;
 public class KundenResourceTest {
 
     private static final String BASE_URL = "http://localhost:8080/";
-
     @BeforeAll
     public static void setUp() {
 

@@ -64,13 +64,18 @@ public class ArtikelResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateArtikel(@PathParam("id") int id, Artikel updatedArtikel) {
-        for (Artikel artikel : artikelListe) {
-            if (artikel.getId() == id) {
-                artikel.setPreis(updatedArtikel.getPreis());
-                return Response.ok(artikel).build();
-            }
+        Artikel artikel = artikelListe.stream()
+                .filter(a -> a.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (artikel != null) {
+            artikel.setName(updatedArtikel.getName());
+            artikel.setPreis(updatedArtikel.getPreis());
+            return Response.ok(artikel).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity("Artikel nicht gefunden!").build();
         }
-        return Response.status(Response.Status.NOT_FOUND).entity("Artikel nicht gefunden!").build();
     }
 
     // DELETE: Artikel löschen
