@@ -12,7 +12,6 @@ public class ArtikelResource {
     private static List<Artikel> artikelListe = new ArrayList<>();
 
     static {
-        // Beispiel-Artikel hinzufügen
         artikelListe.add(new Artikel(101, "Artikel A", 19.99));
         artikelListe.add(new Artikel(102, "Artikel B", 29.99));
         artikelListe.add(new Artikel(103, "Artikel C", 39.99));

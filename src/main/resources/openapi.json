@@ -383,7 +383,7 @@
 				}
 			},
 			"post": {
-				"summary": "Neuen Kunden hinzufügen",
+				"summary": "Neue Bestellung hinzufügen",
 				"operationId": "addKundeBestellung",
 				"requestBody": {
 					"description": "Neuer Kunde",
@@ -406,6 +406,114 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/bestellung/kunden/{kundeId}/artikel/{artikelId}": {
+			"delete": {
+				"summary": "Einen Artikel eines Kunden löschen",
+				"operationId": "deleteArtikelForKunde",
+				"parameters": [
+					{
+						"name": "kundeId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID des Kunden"
+					},
+					{
+						"name": "artikelId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID des Artikels"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Artikel des Kunden gelöscht",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"example": "Artikel des Kunden gelöscht!"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Kunde oder Artikel nicht gefunden"
+					}
+				}
+			}
+		},
+		"/bestellung/artikel/{artikelId}": {
+			"delete": {
+				"summary": "Artikel löschen",
+				"operationId": "deleteArtikelById",
+				"parameters": [
+					{
+						"name": "artikelId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID des Artikels"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Artikel gelöscht",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"example": "Artikel gelöscht!"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Artikel nicht gefunden"
+					}
+				}
+			}
+		},
+		"/bestellung/kunden/{kundeId}": {
+			"delete": {
+				"summary": "Kunde löschen",
+				"operationId": "deleteKundeById",
+				"parameters": [
+					{
+						"name": "kundeId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID des Kunden"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Kunde gelöscht",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"example": "Kunde gelöscht!"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Kunde nicht gefunden"
 					}
 				}
 			}

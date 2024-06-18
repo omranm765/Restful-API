@@ -12,6 +12,20 @@ public class BestellungResource {
 
     private static Bestellung bestellung = new Bestellung();
 
+    static {
+
+        Kunde maxMustermann = new Kunde(1, "Max Mustermann", "123456789", new ArrayList<>());
+        Artikel artikelA = new Artikel(101, "Artikel A", 19.99);
+        Artikel artikelB = new Artikel(102, "Artikel B", 29.99);
+        try {
+            bestellung.addKunde(maxMustermann);
+            bestellung.addArtikelToKunde(maxMustermann, artikelA);
+            bestellung.addArtikelToKunde(maxMustermann, artikelB);
+        } catch (ShopException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // GET: Alle Artikel abrufen
     @GET
     @Path("/artikel")
@@ -87,48 +101,80 @@ public class BestellungResource {
             return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
         }
     }
+
     // DELETE: Einen Artikel löschen
     @DELETE
     @Path("/artikel/{artikelId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteArtikel(@PathParam("artikelId") int artikelId) {
+    public Response deleteArtikelById(@PathParam("artikelId") int artikelId) {
         try {
-            Artikel artikel = bestellung.getArtikelList().stream().filter(a -> a.getId() == artikelId).findFirst().orElse(null);
+            Artikel artikel = bestellung.getArtikelList().stream()
+                    .filter(a -> a.getId() == artikelId)
+                    .findFirst()
+                    .orElse(null);
+            if (artikel == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Artikel nicht gefunden!").build();
+            }
             bestellung.artikelLoeschen(artikel);
+            bestellung.getKundeListMap().forEach((kunde, artikelList) -> {
+                artikelList.removeIf(a -> a.getId() == artikelId);
+                kunde.setArtikelList(new ArrayList<>(artikelList));
+            });
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (ShopException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
+
     // DELETE: Einen Kunden löschen
     @DELETE
     @Path("/kunden/{kundeId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteKunde(@PathParam("kundeId") int kundeId) {
+    public Response deleteKundeById(@PathParam("kundeId") int kundeId) {
         try {
-            Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
-            bestellung.kundeLoeschen(kunde);
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } catch (ShopException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
-    // DELETE: Alle Artikel eines Kunden löschen
-    @DELETE
-    @Path("/kunden/{kundeId}/artikel")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteArtikelForKunde(@PathParam("kundeId") int kundeId) {
-        try {
-            Kunde kunde = bestellung.getKundeList().stream().filter(k -> k.getId() == kundeId).findFirst().orElse(null);
-            if (kunde != null) {
-                List<Artikel> artikelList = bestellung.getArtikelnByKey(kunde);
-                for (Artikel artikel : artikelList) {
-                    bestellung.removeArtikelFromListInMap(kunde, artikel);
-                }
-                return Response.status(Response.Status.NO_CONTENT).build();
-            } else {
+            Kunde kunde = bestellung.getKundeList().stream()
+                    .filter(k -> k.getId() == kundeId)
+                    .findFirst()
+                    .orElse(null);
+            if (kunde == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
             }
+            bestellung.kundeLoeschen(kunde);
+            bestellung.getKundeListMap().remove(kunde);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (ShopException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    // DELETE: Artikel eines Kunden löschen
+    @DELETE
+    @Path("/kunden/{kundeId}/artikel/{artikelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteArtikelForKunde(@PathParam("kundeId") int kundeId, @PathParam("artikelId") int artikelId) {
+        try {
+            Kunde kunde = bestellung.getKundeList().stream()
+                    .filter(k -> k.getId() == kundeId)
+                    .findFirst()
+                    .orElse(null);
+            if (kunde == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Kunde nicht gefunden!").build();
+            }
+            List<Artikel> artikelList = bestellung.getArtikelnByKey(kunde);
+            if (artikelList != null) {
+                Artikel artikelToRemove = artikelList.stream()
+                        .filter(a -> a.getId() == artikelId)
+                        .findFirst()
+                        .orElse(null);
+                if (artikelToRemove != null) {
+                    bestellung.removeArtikelFromListInMap(kunde, artikelToRemove);
+                } else {
+                    return Response.status(Response.Status.NOT_FOUND).entity("Artikel nicht gefunden!").build();
+                }
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Artikel-Liste nicht gefunden!").build();
+            }
+            return Response.status(Response.Status.NO_CONTENT).build();
         } catch (ShopException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }

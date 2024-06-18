@@ -7,33 +7,33 @@ public class Bestellung {
     private List<Kunde> kundeList;
     private Map<Kunde, List<Artikel>> kundeListMap;
 
-    public Bestellung(){
+    public Bestellung() {
         artikelList = new ArrayList<>();
         kundeList = new ArrayList<>();
         kundeListMap = new HashMap<>();
     }
 
     public void addListOfArtikelToKunde(Kunde kunde, List<Artikel> artikelList) throws ShopException {
-        Validator.check(kunde == null, "Kunde nicht gefunden!" );
+        Validator.check(kunde == null, "Kunde nicht gefunden!");
         kunde.addAllArtikel(artikelList);
         kundeListMap.put(kunde, kunde.getArtikelList());
     }
 
     public void addArtikelToKunde(Kunde kunde, Artikel artikel) throws ShopException {
-        Validator.check(kunde == null, "Kunde nicht gefunden!" );
-        Validator.check(artikel == null, "Artikel nicht gefunden!" );
+        Validator.check(kunde == null, "Kunde nicht gefunden!");
+        Validator.check(artikel == null, "Artikel nicht gefunden!");
         kunde.addArtikel(artikel);
         kundeListMap.put(kunde, kunde.getArtikelList());
     }
 
-    public List<Artikel> getArtikelnByKey(Kunde kunde){
-        return kundeListMap.get(kunde);
+    public List<Artikel> getArtikelnByKey(Kunde kunde) {
+        return kundeListMap.getOrDefault(kunde, new ArrayList<>());
     }
 
-    public List<Kunde> getKundenByValue(List<Artikel> artikelList){
+    public List<Kunde> getKundenByValue(List<Artikel> artikelList) {
         List<Kunde> kundenMitGleicherListe = new ArrayList<>();
         for (Map.Entry<Kunde, List<Artikel>> entry : kundeListMap.entrySet()) {
-            if(entry.getValue().equals(artikelList)){
+            if (entry.getValue().equals(artikelList)) {
                 kundenMitGleicherListe.add(entry.getKey());
             }
         }
@@ -51,27 +51,31 @@ public class Bestellung {
     }
 
     public void removeArtikelFromListInMap(Kunde kunde, Artikel artikel) throws ShopException {
+        Validator.check(kunde == null, "Kunde nicht gefunden!");
+        Validator.check(artikel == null, "Artikel nicht gefunden!");
         kunde.removeArtikel(artikel);
-        kundeListMap.put(kunde, new ArrayList<>(kunde.getArtikelList()));
+        List<Artikel> updatedArtikelList = new ArrayList<>(kunde.getArtikelList());
+        kundeListMap.put(kunde, updatedArtikelList);
+        System.out.println(kunde);
     }
 
     public void addArtikel(Artikel artikel) throws ShopException {
-        Validator.check(artikel == null, "Artikel nicht gefunden!" );
+        Validator.check(artikel == null, "Artikel nicht gefunden!");
         artikelList.add(artikel);
     }
 
     public void artikelLoeschen(Artikel artikel) throws ShopException {
-        Validator.check(artikel == null, "Artikel nicht gefunden!" );
+        Validator.check(artikel == null, "Artikel nicht gefunden!");
         artikelList.removeIf(a -> a.getId() == artikel.getId());
     }
 
     public void addKunde(Kunde kunde) throws ShopException {
-        Validator.check(kunde == null, "Kunde nicht gefunden!" );
+        Validator.check(kunde == null, "Kunde nicht gefunden!");
         kundeList.add(kunde);
     }
 
     public void kundeLoeschen(Kunde kunde) throws ShopException {
-        Validator.check(kunde == null, "Kunde nicht gefunden!" );
+        Validator.check(kunde == null, "Kunde nicht gefunden!");
         kundeList.removeIf(k -> k.getId() == kunde.getId());
     }
 
@@ -103,9 +107,6 @@ public class Bestellung {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Bestellung:\n");
-
-
-        // Kunde-Liste Map
         builder.append("Kunde-Liste Map:\n");
         for (Map.Entry<Kunde, List<Artikel>> entry : kundeListMap.entrySet()) {
             builder.append("Kunde: ").append(entry.getKey().toString()).append("\n");
